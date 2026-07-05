@@ -2,16 +2,13 @@
 # MICPR: Hybrid Imputation Pipeline for Censored Mortality Data (1-9)
 # Based on the methodological framework of Erdman et al. (2021)
 # ==============================================================================
-
-# --- 0. Load Libraries & Set Seed ---
 library(mice)
 library(dplyr)
 library(tidyr)
 
-set.seed(42) # For reproducibility
+set.seed(42)
 
 # --- 1. Path Configuration ---
-# Double-checked paths with forward slashes to avoid Windows path errors
 INPUT_DIR  <- "C:/Users/Martin/Desktop/Github/MICPR/CDC_data"
 OUTPUT_DIR <- "C:/Users/Martin/Desktop/Github/MICPR/Result"
 
@@ -25,7 +22,7 @@ years_vector <- 2014:2019
 # ==============================================================================
 cat("\n=== PROCESSING: Mental & Behavioural Disorders ===\n")
 
-# 1. Load and clean annual files
+# 1. Load and clean files
 mental_list <- list()
 for (i in seq_along(years_vector)) {
   file_name <- paste0("Mentalandbehaviouraldisorders3Y", years_vector[i], ".csv")
@@ -241,11 +238,9 @@ cat("\n=== MERGING AND EXPORTING FINAL ANALYSIS DATASET ===\n")
 
 mental_prep  <- mental_long %>% select(`County Code`, Year, Deaths_Mental = Deaths, Population)
 suicide_prep <- suicide_long %>% select(`County Code`, Year, Deaths_Suicide = Deaths)
-
-# Perform outer join to keep all records safe and separate
 master_long <- full_join(mental_prep, suicide_prep, by = c("County Code", "Year"))
 
-# Pivot to the analysis-ready Wide Format
+# Pivot to Wide Format
 master_wide <- master_long %>%
   pivot_wider(
     id_cols     = `County Code`,
