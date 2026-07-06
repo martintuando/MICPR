@@ -2,13 +2,16 @@
 # MICPR: Hybrid Imputation Pipeline for Censored Mortality Data (1-9)
 # Based on the methodological framework of Erdman et al. (2021)
 # ==============================================================================
+
+# --- 0. Load Libraries & Set Seed ---
 library(mice)
 library(dplyr)
 library(tidyr)
 
-set.seed(42)
+set.seed(42) # For reproducibility
 
 # --- 1. Path Configuration ---
+# Double-checked paths with forward slashes to avoid Windows path errors
 INPUT_DIR  <- "C:/Users/Martin/Desktop/Github/MICPR/CDC_data"
 OUTPUT_DIR <- "C:/Users/Martin/Desktop/Github/MICPR/Result"
 
@@ -22,7 +25,7 @@ years_vector <- 2014:2019
 # ==============================================================================
 cat("\n=== PROCESSING: Mental & Behavioural Disorders ===\n")
 
-# 1. Load and clean files
+# 1. Load and clean annual files
 mental_list <- list()
 for (i in seq_along(years_vector)) {
   file_name <- paste0("Mentalandbehaviouraldisorders3Y", years_vector[i], ".csv")
@@ -54,7 +57,7 @@ if (length(na_idx_m) > 0) {
     next_y <- ifelse(length(next_y) == 0, NA, next_y)
     
     if (!is.na(prev_y) && prev_y >= 10 && !is.na(next_y) && next_y >= 10) {
-      mental_long$Deaths[idx] <- 10
+      mental_long$Deaths[idx] <- 9
     } else if ((!is.na(prev_y) && prev_y >= 10 && (is.na(next_y) || next_y == 0)) ||
                (!is.na(next_y) && next_y >= 10 && (is.na(prev_y) || prev_y == 0))) {
       avail_val <- ifelse(!is.na(prev_y) && prev_y >= 10, prev_y, next_y)
@@ -161,7 +164,7 @@ if (length(na_idx_s) > 0) {
     next_y <- ifelse(length(next_y) == 0, NA, next_y)
     
     if (!is.na(prev_y) && prev_y >= 10 && !is.na(next_y) && next_y >= 10) {
-      suicide_long$Deaths[idx] <- 10
+      suicide_long$Deaths[idx] <- 9
     } else if ((!is.na(prev_y) && prev_y >= 10 && (is.na(next_y) || next_y == 0)) ||
                (!is.na(next_y) && next_y >= 10 && (is.na(prev_y) || prev_y == 0))) {
       avail_val <- ifelse(!is.na(prev_y) && prev_y >= 10, prev_y, next_y)
@@ -238,9 +241,11 @@ cat("\n=== MERGING AND EXPORTING FINAL ANALYSIS DATASET ===\n")
 
 mental_prep  <- mental_long %>% select(`County Code`, Year, Deaths_Mental = Deaths, Population)
 suicide_prep <- suicide_long %>% select(`County Code`, Year, Deaths_Suicide = Deaths)
+
+# Perform outer join to keep all records safe and separate
 master_long <- full_join(mental_prep, suicide_prep, by = c("County Code", "Year"))
 
-# Pivot to Wide Format
+# Pivot to the analysis-ready Wide Format
 master_wide <- master_long %>%
   pivot_wider(
     id_cols     = `County Code`,
@@ -257,3 +262,6 @@ cat("\nExecution completed successfully!")
 cat("\nSaved Master Wide File to:", output_file)
 cat("\nFinal dataset dimensions:", dim(master_wide))
 cat("\n==============================================================================\n")
+
+
+setwd("C:/Users/Martin/Desktop/Github/MICPR/Result")
