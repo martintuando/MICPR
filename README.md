@@ -24,9 +24,3 @@ For the final missing values, I utilized **Multiple Imputation by Chained Equati
 * **Variance Stabilization:** After analyzing the distribution of non-censored (viable) mortality data, I identified a distinct right-skewed distribution. Consequently, I applied a logarithmic transformation (`log(deaths + 1)`) to the count data. This transformation was specifically selected because it most effectively normalizes the right-skewness observed in the viable data, providing a robust statistical basis for the MICE algorithm.
 * **Conditioning:** I used population size as a predictor, which is epidemiologically essential for accurate estimates, as mortality counts are fundamentally tied to the population at risk.
 * **The Breakthrough (Recalibration):** A common issue in MICE is "Clamping" (capping values at 9), which creates artificial ceilings. Instead, I introduced **Proportional Min-Max Scaling**. I mapped the imputed estimates back to the $[1, 9]$ range, preserving the relative ordinal ranking between counties while staying strictly within legal privacy boundaries.
-
-## Scientific Value
-This process transforms "Missing Data" into "Reconstructed Reality." By using this pipeline, the final dataset retains its demographic structure and statistical variance, preventing the systematic bias that would occur in a standard analysis.
-
-## Usage
-The script `cdc_imputation.R` handles the end-to-end process: loading the panels, applying the 3-tier logic, and exporting the final `Master_Imputed_Outcomes_Wide.csv` ready for regression analysis.
