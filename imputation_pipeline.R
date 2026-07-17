@@ -4,15 +4,15 @@
 # Based on the methodological framework of Erdman et al. (2021)
 # ==============================================================================
 
-# --- 0. Load Libraries & Set Seed ---
+
 library(mice)
 library(dplyr)
 library(tidyr)
 
-set.seed(42) # For reproducibility
+set.seed(42) 
 
 # --- 1. Path Configuration ---
-# Double-checked paths with forward slashes to avoid Windows path errors
+
 INPUT_DIR  <- "C:/Users/Martin/Desktop/Github/MICPR/CDC_data"
 OUTPUT_DIR <- "C:/Users/Martin/Desktop/Github/MICPR/Result"
 
